@@ -649,10 +649,12 @@ char applyPatches(char isDex)
     uint8_t build_date[5];
     getMechaBuildDate(build_date);
 
-    char applyOriginalPatch     = 0;
-    char applyForceUnlock       = 0;
-    const uint8_t *force_unlock = getForceUnlock(build_date);
-    const uint8_t *orig_patch   = getOrigPatch(build_date);
+    char applyOriginalPatch        = 0;
+    char applyForceUnlock          = 0;
+    const uint8_t *force_unlock    = getForceUnlock(build_date);
+    const uint8_t *force_unlock_v2 = getForceUnlockV2(build_date);
+    const uint8_t *orig_patch      = getOrigPatch(build_date);
+    int force_unlock_v2_option     = -1;
 
     gsKit_clear(gsGlobal, Black);
 
@@ -669,6 +671,11 @@ char applyPatches(char isDex)
         menu.option_count = 3;
         menu.options[2]   = "Install force unlock";
     }
+    if (isDex && force_unlock_v2)
+    {
+        force_unlock_v2_option            = menu.option_count;
+        menu.options[menu.option_count++] = "Install force unlock v2";
+    }
 
     int selected = drawMenu(&menu);
     if (selected == -1)
@@ -679,6 +686,11 @@ char applyPatches(char isDex)
     }
     else if (selected == 1)
         applyOriginalPatch = 1;
+    else if (selected == force_unlock_v2_option)
+    {
+        applyForceUnlock = 1;
+        force_unlock     = force_unlock_v2;
+    }
     else if (selected == 2)
         applyForceUnlock = 1;
 
